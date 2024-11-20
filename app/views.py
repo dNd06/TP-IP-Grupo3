@@ -4,6 +4,7 @@ from django.shortcuts import redirect, render
 from .layers.services import services
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from app.layers.transport import transport
 
 def index_page(request):
     return render(request, 'index.html')
@@ -12,7 +13,7 @@ def index_page(request):
 # si el opcional de favoritos no está desarrollado, devuelve un listado vacío.
 def home(request):
     search_input = request.GET.get('search', None)  # Obtiene el parámetro 'search' de la URL, si existe.
-    images = services.getAllImages(search_input)
+    images = services.getAllImages(None)
     favourite_list = services.getAllFavourites(request)
 
     return render(request, 'home.html', { 'images': images, 'favourite_list': favourite_list })
@@ -23,7 +24,8 @@ def search(request):
     # si el texto ingresado no es vacío, trae las imágenes y favoritos desde services.py,
     # y luego renderiza el template (similar a home).
     if (search_msg != ''):
-        pass
+        resultados = [character for character in services.getAllImages(None) if search_msg.lower() in character.name.lower()]
+        return render(request, 'home.html', {'images': resultados})
     else:
         return redirect('home')
 
