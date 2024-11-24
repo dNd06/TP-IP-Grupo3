@@ -1,47 +1,51 @@
 {% extends 'header.html' %} {% block content %}
 <div class="container-xl">
-    <div class="table-responsive">
-        <div class="table-wrapper">
-            <div class="table-title">
-                <div class="row">
-                    <div class="col-sm-8">
-                        <h2>Listado de <strong>FAVORITOS</strong></h2>
-                    </div>
-                </div>
-            </div>
-            <table class="table table-striped table-hover table-bordered">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Imagen</th>
-                        <th>Nombre <i class="fa fa-sort"></i></th>
-                        <th>Status</th>
-                        <th>Última ubicación <i class="fa fa-sort"></i></th>
-                        <th>Episodio inicial </th>
-                        <th>Acciones </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for favourite in favourite_list %}
-                    <tr>
-                        <td>-</td>
-                        <td><img src="{{ favourite.url }}" alt="" style="max-width: 200px; max-height: 200px;"></td>
-                        <td>{{ favourite.name }}</td>
-                        <td>{{ favourite.status }}</td>
-                        <td>{{ favourite.last_location }}</td>
-                        <td>{{ favourite.first_seen }}</td>
-                        <td>
-                            <form method="post" action="{% url 'borrar-favorito' %}">
-                                {% csrf_token %}
-                                <input type="hidden" name="id" value="{{ favourite.id }}">
-                                <button type="submit" class="btn" style="color:red"><i class="material-icons">&#xE872;</i></button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <!-- Manejo de mensajes -->
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
     </div>
+    {% endif %}
+
+    {% if favourite_list|length == 0 %}
+    <div class="alert alert-warning" role="alert">
+        No tienes favoritos guardados. ¡Añade algunos desde el inicio!
+    </div>
+    {% else %}
+    <table class="table table-striped table-hover table-bordered">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Imagen</th>
+                <th>Nombre</th>
+                <th>Status</th>
+                <th>Última ubicación</th>
+                <th>Episodio inicial</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for favourite in favourite_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><img src="{{ favourite.url }}" alt="" style="max-width: 200px; max-height: 200px;"></td>
+                <td>{{ favourite.name }}</td>
+                <td>{{ favourite.status }}</td>
+                <td>{{ favourite.last_location }}</td>
+                <td>{{ favourite.first_seen }}</td>
+                <td>
+                    <form method="post" action="{% url 'borrar-favorito' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="{{ favourite.id }}">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
 </div>
 {% endblock %}
